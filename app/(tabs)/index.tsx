@@ -47,9 +47,9 @@ export default function App() {
       if(await Voice.isRecognizing()){
         _stopRecognizing()
       }else{
+        console.log('called start');
         await Voice.start('pt-BR');
       }
-      console.log('called start');
     } catch (e) {
       console.error("start", e);
     }
@@ -57,6 +57,8 @@ export default function App() {
 
   const _stopRecognizing = async () => {
     try {
+      console.log('stoped');
+      
       await Voice.stop();
     } catch (e) {
       console.error(e);
