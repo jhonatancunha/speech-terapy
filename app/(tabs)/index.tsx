@@ -18,20 +18,12 @@ export default function App() {
 
 
 
-  const onSpeechStart = (e: any) => {
-    console.log('onSpeechStart: ', e);
-    setStarted('√');
-  };
 
   const onSpeechRecognized = (e: SpeechRecognizedEvent) => {
     console.log('onSpeechRecognized: ', e);
     setRecognized('√');
   };
 
-  const onSpeechEnd = (e: any) => {
-    console.log('onSpeechEnd: ', e);
-    setEnd('√');
-  };
 
   const onSpeechError = (e: SpeechErrorEvent) => {
     console.log('onSpeechError: ', e);
@@ -48,15 +40,15 @@ export default function App() {
     setPartialResults(e.value);
   };
 
-  const onSpeechVolumeChanged = (e: any) => {
-    console.log('onSpeechVolumeChanged: ', e);
-    setVolume(e.value);
-  };
 
   const _startRecognizing = async () => {
     _clearState();
     try {
-      await Voice.start('pt');
+      if(await Voice.isRecognizing()){
+        _stopRecognizing()
+      }else{
+        await Voice.start('pt-BR');
+      }
       console.log('called start');
     } catch (e) {
       console.error("start", e);
@@ -98,27 +90,18 @@ export default function App() {
     setPartialResults([]);
   };
 
-  const speak = () => {
-    const thingToSay = 'Repita comigo: Abobrinha';
-    Speech.speak(thingToSay, {
-      language: 'pt',
-    });
-  };
+  // const speak = () => {
+  //   const thingToSay = 'Repita comigo: Abobrinha';
+  //   Speech.speak(thingToSay, {
+  //     language: 'pt',
+  //   });
+  // };
 
   useEffect(() => {
-    Voice.onSpeechStart = onSpeechStart;
     Voice.onSpeechRecognized = onSpeechRecognized;
-    Voice.onSpeechEnd = onSpeechEnd;
     Voice.onSpeechError = onSpeechError;
     Voice.onSpeechResults = onSpeechResults;
     Voice.onSpeechPartialResults = onSpeechPartialResults;
-    Voice.onSpeechVolumeChanged = onSpeechVolumeChanged;
-
-    return () => {
-      console.log('destrou');
-      
-      Voice.destroy().then(Voice.removeAllListeners);
-    };
   }, []);
 
   return (
