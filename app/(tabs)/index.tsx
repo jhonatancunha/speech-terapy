@@ -56,7 +56,7 @@ export default function App() {
   const _startRecognizing = async () => {
     _clearState();
     try {
-      await Voice.start('en-US');
+      await Voice.start('pt');
       console.log('called start');
     } catch (e) {
       console.error("start", e);
