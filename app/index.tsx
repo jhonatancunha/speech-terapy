@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableHighlight } from 'react-native';
-import * as Speech from 'expo-speech';
 
-import { Text } from '@/components/Themed';
 import { SpeechErrorEvent, SpeechRecognizedEvent, SpeechResultsEvent } from '@react-native-voice/voice';
 import Voice from "@react-native-voice/voice";
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
 
 
 export default function App() {
@@ -133,7 +133,7 @@ export default function App() {
         );
       })}
       <Text style={styles.stat}>{`End: ${end}`}</Text>
-      <TouchableHighlight onPress={_startRecognizing}>
+      {/* <TouchableHighlight onPress={_startRecognizing}>
         <Text style={styles.action}>Start Recognizing</Text>
       </TouchableHighlight>
       <TouchableHighlight onPress={_stopRecognizing}>
@@ -144,7 +144,12 @@ export default function App() {
       </TouchableHighlight>
       <TouchableHighlight onPress={_destroyRecognizer}>
         <Text style={styles.action}>Destroy</Text>
-      </TouchableHighlight>
+      </TouchableHighlight> */}
+
+      <Button>
+        <Text>Default</Text>
+      </Button>
+
     </View>
   );
 }
