@@ -1,19 +1,12 @@
 import '~/global.css';
 
-import { Theme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { NAV_THEME } from '~/lib/constants';
 
-const LIGHT_THEME: Theme = {
-  dark: false,
-  colors: NAV_THEME.light,
-};
-const DARK_THEME: Theme = {
-  dark: true,
-  colors: NAV_THEME.dark,
-};
+import * as eva from '@eva-design/eva';
+import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -31,9 +24,14 @@ export default function RootLayout() {
 
 
   return (
-    <ThemeProvider value={LIGHT_THEME}>
-      <StatusBar />
-      <Stack />
-    </ThemeProvider>
+    <>
+      <IconRegistry icons={EvaIconsPack} />
+      <ApplicationProvider {...eva} theme={eva.light}>
+        <StatusBar />
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+        </Stack>
+      </ApplicationProvider>
+    </>
   );
 }

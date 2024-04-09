@@ -3,8 +3,7 @@ import { View, StyleSheet, TouchableHighlight } from 'react-native';
 
 import { SpeechErrorEvent, SpeechRecognizedEvent, SpeechResultsEvent } from '@react-native-voice/voice';
 import Voice from "@react-native-voice/voice";
-import { Button } from '~/components/ui/button';
-import { Text } from '~/components/ui/text';
+import { Button, Icon, Layout, Spinner, Text } from '@ui-kitten/components';
 
 
 export default function App() {
@@ -12,10 +11,9 @@ export default function App() {
   const [volume, setVolume] = useState('');
   const [error, setError] = useState('');
   const [end, setEnd] = useState('');
-  const [started, setStarted] = useState('');
   const [results, setResults] = useState([]);
   const [partialResults, setPartialResults] = useState([]);
-
+  const [isRecording, setRecording] = useState(false)
 
 
 
@@ -48,6 +46,7 @@ export default function App() {
         _stopRecognizing()
       }else{
         console.log('called start');
+        setRecording(true)
         await Voice.start('pt-BR');
       }
     } catch (e) {
@@ -59,6 +58,7 @@ export default function App() {
     try {
       console.log('stoped');
       
+      setRecording(false)
       await Voice.stop();
     } catch (e) {
       console.error(e);
@@ -68,6 +68,7 @@ export default function App() {
   const _cancelRecognizing = async () => {
     try {
       await Voice.cancel();
+      setRecording(false);
     } catch (e) {
       console.error(e);
     }
@@ -87,17 +88,11 @@ export default function App() {
     setVolume('');
     setError('');
     setEnd('');
-    setStarted('');
     setResults([]);
     setPartialResults([]);
+    setRecording(false);
   };
 
-  // const speak = () => {
-  //   const thingToSay = 'Repita comigo: Abobrinha';
-  //   Speech.speak(thingToSay, {
-  //     language: 'pt',
-  //   });
-  // };
 
   useEffect(() => {
     Voice.onSpeechRecognized = onSpeechRecognized;
@@ -107,83 +102,42 @@ export default function App() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.welcome}>Welcome to React Native Voice!</Text>
-      <Text style={styles.instructions}>
-        Press the button and start speaking.
-      </Text>
-      <Text style={styles.stat}>{`Started: ${started}`}</Text>
-      <Text style={styles.stat}>{`Recognized: ${recognized}`}</Text>
-      <Text style={styles.stat}>{`Volume: ${volume}`}</Text>
-      <Text style={styles.stat}>{`Error: ${error}`}</Text>
-      <Text style={styles.stat}>Results</Text>
-      {results.map((result, index) => {
-        return (
-          <Text key={`result-${index}`} style={styles.stat}>
-            {result}
-          </Text>
-        );
-      })}
-      <Text style={styles.stat}>Partial Results</Text>
+    <View>
+
+     
+      <Text category="h4">Resultados Parciais</Text>
       {partialResults.map((result, index) => {
         return (
-          <Text key={`partial-result-${index}`} style={styles.stat}>
+          <Text key={`partial-result-${index}`}>
             {result}
           </Text>
         );
       })}
-      <Text style={styles.stat}>{`End: ${end}`}</Text>
-      {/* <TouchableHighlight onPress={_startRecognizing}>
-        <Text style={styles.action}>Start Recognizing</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={_stopRecognizing}>
-        <Text style={styles.action}>Stop Recognizing</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={_cancelRecognizing}>
-        <Text style={styles.action}>Cancel</Text>
-      </TouchableHighlight>
-      <TouchableHighlight onPress={_destroyRecognizer}>
-        <Text style={styles.action}>Destroy</Text>
-      </TouchableHighlight> */}
 
-      <Button>
-        <Text>Default</Text>
+
+      <Button onPress={() => {
+        if(isRecording){
+          _stopRecognizing()
+        }else{
+          _startRecognizing()
+        }
+      }} accessoryLeft={<Icon name={isRecording ? "stop-circle-outline" : "mic-outline"} />}>
+        {isRecording ? "Gravando" : "Gravar"}
       </Button>
 
+      <Text category="h4">Resultados Finais</Text>
+
+      {isRecording  ?  <Spinner status='primary' /> : null}
+
+
+      {results.map((result, index) => {
+        return (
+          <Text key={`result-${index}`}>
+            {result}
+          </Text>
+        );
+      })}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  button: {
-    width: 50,
-    height: 50,
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  action: {
-    textAlign: 'center',
-    color: '#0000FF',
-    marginVertical: 5,
-    fontWeight: 'bold',
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-  stat: {
-    textAlign: 'center',
-    color: '#B0171F',
-    marginBottom: 1,
-  },
-});
