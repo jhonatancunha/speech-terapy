@@ -11,17 +11,16 @@ export default function App() {
   const [results, setResults] = useState([]);
   const [isRecording, setRecording] = useState<boolean>(false)
 
+  const TIMEOUT = 1000 * 60
 
 
 
   const onSpeechError = (e: SpeechErrorEvent) => {
-    console.log('onSpeechError: ', e);
     setError(JSON.stringify(e.error));
     setRecording(false);
   };
 
   const onSpeechResults = (e: SpeechResultsEvent) => {
-    console.log('onSpeechResults: ', e);
     setResults(e.value);
     setRecording(false);
   };
@@ -34,9 +33,9 @@ export default function App() {
 
       if(isRecognizing) await _stopRecognizing()
         
-      console.log('called start');
       setRecording(true)
       await Voice.start('pt-BR');
+      setTimeout(_stopRecognizing, TIMEOUT)
     } catch (e) {
       console.error("start", e);
     }
@@ -44,8 +43,6 @@ export default function App() {
 
   const _stopRecognizing = async () => {
     try {
-      console.log('stoped');
-      
       setRecording(false)
       await Voice.stop();
     } catch (e) {
@@ -81,10 +78,6 @@ export default function App() {
       >
         <Text category="h4">G O I A B A</Text>
       
-
-
-        {/* <Text category="h4">Resultados Finais</Text> */}
-
         {isRecording  ?  <Spinner status='primary' /> : null}
       </View>
 
