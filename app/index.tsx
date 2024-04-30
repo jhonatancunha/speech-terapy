@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Voice, { SpeechErrorEvent, SpeechResultsEvent } from '@react-native-voice/voice';
@@ -26,6 +26,7 @@ export default function App() {
   const isRecording = useBoolean(false)
   const isFinished = useBoolean(false);
   const showFeedback = useBoolean(false);
+  const timeout = useRef<NodeJS.Timeout | null>(null);
   
   const results  = useArrayState<number>([])
 
@@ -35,14 +36,19 @@ export default function App() {
 
   
   const currentWordFormatted = selectedWords[currentWordIdx]?.split("")?.join(" ").toUpperCase()
-  const progress = (100* currentWordIdx) / TOTAL_WORDS
+  const progress = (100 * currentWordIdx) / TOTAL_WORDS
   
 
   const onSpeechError = (e: SpeechErrorEvent) => {
-    isFinished.actions.setValue(false);
+    isRecording.actions.setValue(false)
   };
 
+  console.log('currentWordIdx', currentWordIdx, selectedWords[currentWordIdx]);
+  
+
   const calculateMetric = (detectedWord: string) => {
+    console.log('chamou calculate', detectedWord);
+    
     setDetectedWord(detectedWord);
     setCurrentWordIdx(prevState => {
       isRecording.actions.setValue(false);
@@ -70,45 +76,48 @@ export default function App() {
 
 
   const onSpeechResults = (e: SpeechResultsEvent) => {
+    console.log('onSpeechResults', e?.value?.[0]);
+    
       calculateMetric(e?.value?.[0] ?? '');
   };
 
   const startRecognizing = async () => {
     try {
+      console.log('startRecognizing');
       isRecording.actions.setValue(true)
       await Voice.start('pt-BR');
-      setTimeout(stopRecognizing, TIMEOUT)
+
+      if(timeout.current) clearTimeout(timeout.current)
+      timeout.current = setTimeout(stopRecognizing, TIMEOUT)
     } catch (e) {
       console.error("_startRecognizing", e);
       stopRecognizing()
+
     }
   };
 
   const stopRecognizing = async () => {
     try {
+      if(timeout.current) clearTimeout(timeout.current)
       isRecording.actions.setValue(false);
       await Voice.stop();
+      console.log('stopRecognizing');
       calculateMetric('');
     } catch (e) {
       console.error("_stopRecognizing", e);
-    } finally {
-      clearState();
     }
   };
 
-  const clearState = () => {
-    isRecording.actions.setValue(false);
-  };
 
   const restartGame = () => {
     setSelectedIndexes(generateRandomIndices(TOTAL_WORDS , 0, words.length));
-    clearState();
     setDetectedWord('')
     setCurrentWordIdx(0)
     isRecording.actions.setFalse()
     isFinished.actions.setFalse()
     showFeedback.actions.setFalse()
     results.actions.setData([])
+    if(timeout.current) clearTimeout(timeout.current)
   }
 
 
@@ -125,7 +134,6 @@ export default function App() {
 
 
   const renderFeedback = () => {
-
     const currentResult = results.state?.[currentWordIdx - 1] * 100;
     const currentWord = selectedWords[currentWordIdx - 1];
     const animation = currentResult > 50 ? HappyLottie : BadLottie;
@@ -137,9 +145,9 @@ export default function App() {
           justifyContent: 'center',
         }}
       >
-        <Text category="h4">
+        {/* <Text category="h4">
           Rsultado: {currentResult?.toFixed(2)}%
-        </Text>
+        </Text> */}
         <Text category="h4">
           Original: {currentWord?.toLowerCase()}
         </Text>
@@ -171,8 +179,6 @@ export default function App() {
 
   const renderContent = () => {
     return <>
-   
-
       <View style={{
           flex: 1,
           alignItems: 'center',
