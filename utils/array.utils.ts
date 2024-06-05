@@ -5,7 +5,11 @@
  * @param max The maximum value of the range (inclusive).
  * @returns An array of random indices within the specified range.
  */
-export const generateRandomIndices = (count: number, min: number, max: number): number[] => {
+export const generateRandomIndices = (
+  count: number,
+  min: number,
+  max: number,
+): number[] => {
   const randomIndices: number[] = [];
 
   const formattedCount = Math.min(count, max - min + 1);
@@ -18,5 +22,4 @@ export const generateRandomIndices = (count: number, min: number, max: number): 
   }
 
   return randomIndices;
-}
-
+};

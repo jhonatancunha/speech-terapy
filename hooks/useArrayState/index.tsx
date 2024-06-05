@@ -2,7 +2,9 @@ import { useState } from 'react';
 
 import type { UseArrayStateReturn } from './types';
 
-export const useArrayState = <T,>(initialState: Array<T> = []): UseArrayStateReturn<T> => {
+export const useArrayState = <T,>(
+  initialState: Array<T> = [],
+): UseArrayStateReturn<T> => {
   const [state, setState] = useState<Array<T>>(initialState);
 
   const add = (value: T): void => {
