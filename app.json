@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "app",
+    "name": "Speech Therapy",
     "slug": "app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#EDF6FD"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -21,7 +21,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#EDF6FD"
       },
       "permissions": ["android.permission.RECORD_AUDIO"],
       "package": "com.jhonatancunha.app",
