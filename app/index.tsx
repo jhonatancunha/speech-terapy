@@ -43,12 +43,9 @@ export default function App() {
     isRecording.actions.setValue(false)
   };
 
-  console.log('currentWordIdx', currentWordIdx, selectedWords[currentWordIdx]);
   
 
   const calculateMetric = (detectedWord: string) => {
-    console.log('chamou calculate', detectedWord);
-    
     setDetectedWord(detectedWord);
     setCurrentWordIdx(prevState => {
       isRecording.actions.setValue(false);
@@ -76,23 +73,23 @@ export default function App() {
 
 
   const onSpeechResults = (e: SpeechResultsEvent) => {
-    console.log('onSpeechResults', e?.value?.[0]);
-    
-      calculateMetric(e?.value?.[0] ?? '');
+      const word = e?.value?.[0];
+      if(!word && !word?.length) {
+        isRecording.actions.setValue(false)
+      }else{
+        calculateMetric(e?.value?.[0] ?? '');
+      }
   };
 
   const startRecognizing = async () => {
     try {
-      console.log('startRecognizing');
       isRecording.actions.setValue(true)
       await Voice.start('pt-BR');
 
       if(timeout.current) clearTimeout(timeout.current)
       timeout.current = setTimeout(stopRecognizing, TIMEOUT)
     } catch (e) {
-      console.error("_startRecognizing", e);
       stopRecognizing()
-
     }
   };
 
@@ -101,7 +98,6 @@ export default function App() {
       if(timeout.current) clearTimeout(timeout.current)
       isRecording.actions.setValue(false);
       await Voice.stop();
-      console.log('stopRecognizing');
       calculateMetric('');
     } catch (e) {
       console.error("_stopRecognizing", e);
