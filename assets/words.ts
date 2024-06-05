@@ -215,7 +215,6 @@ export const words = [
   "Montanha",
   "Vale",
   "Rio",
-  "Lago",
   "Mar",
   "Oceano",
   "Praia",

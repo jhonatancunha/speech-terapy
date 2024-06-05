@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
-import { Button, Icon, ProgressBar, Text } from '@ui-kitten/components';
+import { Button, Card, Icon, ProgressBar, Text } from '@ui-kitten/components';
 import { View } from 'react-native';
 import { useArrayState } from '~/hooks/useArrayState';
 import { compareTwoStrings, getWordsByDifficulty } from '~/utils/string.utils';
@@ -136,7 +136,7 @@ export default function App(): React.JSX.Element {
   const renderFeedback = (): React.JSX.Element => {
     const currentResult = results.state?.[currentWordIdx - 1] * 100;
     const currentWord = selectedWords[currentWordIdx - 1];
-    const animation = currentResult > 50 ? HappyLottie : BadLottie;
+    const animation = currentResult === 100 ? HappyLottie : BadLottie;
 
     return (
       <>
@@ -144,15 +144,44 @@ export default function App(): React.JSX.Element {
           style={{
             flex: 1,
             alignItems: 'center',
-            justifyContent: 'center',
+            marginTop: '20%',
           }}>
-          {/* <Text category="h4">
-          Rsultado: {currentResult?.toFixed(2)}%
-        </Text> */}
-          <Text category="h4">Original: {currentWord?.toLowerCase()}</Text>
-          <Text category="h4">Detectada: {detectedWord?.toLowerCase()}</Text>
+          <Card
+            status="success"
+            style={{
+              display: 'flex',
+              width: '100%',
+            }}>
+            <Text style={{ textAlign: 'center', marginBottom: 4 }}>
+              Original:
+            </Text>
+            <Text
+              category={`h${Number(difficulty) + 1}`}
+              numberOfLines={1}
+              style={{ textAlign: 'center' }}>
+              {currentWord?.toUpperCase()}
+            </Text>
+          </Card>
 
-          <View style={{ marginTop: 50 }}>
+          <Card
+            status="warning"
+            style={{
+              display: 'flex',
+              marginTop: 18,
+              width: '100%',
+            }}>
+            <Text style={{ textAlign: 'center', marginBottom: 4 }}>
+              Detectada:
+            </Text>
+            <Text
+              category={`h${Number(difficulty) + 1}`}
+              numberOfLines={1}
+              style={{ textAlign: 'center' }}>
+              {detectedWord?.toUpperCase()}
+            </Text>
+          </Card>
+
+          <View style={{ marginTop: '15%' }}>
             <LottieView
               autoPlay
               style={{
@@ -182,7 +211,11 @@ export default function App(): React.JSX.Element {
           justifyContent: 'center',
         }}>
         <Text style={{ textAlign: 'center', fontSize: 13 }}>PALAVRA</Text>
-        <Text style={{ textAlign: 'center' }} category="h4">
+        <Text
+          style={{
+            textAlign: 'center',
+          }}
+          category={`h${Number(difficulty) + 1}`}>
           {!isFinished.value
             ? currentWordFormatted
             : `Você acertou um total de ${(averageMetrics * 100).toFixed(2)}%`}
@@ -212,7 +245,7 @@ export default function App(): React.JSX.Element {
         <Button
           onPress={restartGame}
           accessoryLeft={<Icon name={'sync-outline'} />}>
-          RECOMEÇAR
+          JOGAR NOVAMENTE
         </Button>
       ) : null}
     </>
