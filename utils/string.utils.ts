@@ -1,6 +1,6 @@
+/* eslint-disable no-param-reassign */
 import { words } from '~/assets/words';
 import { WordsLevelsEnum } from './enums.utils';
-import { generateRandomIndices } from './array.utils';
 
 /**
  * Calculates the similarity between two strings based on the concept of bigrams.
@@ -46,13 +46,13 @@ export const compareTwoStrings = (first: string, second: string): number => {
   return (2.0 * intersectionSize) / (first.length + second.length - 2);
 };
 
-const countSyllables = (word: string) => {
+const countSyllables = (word: string): number => {
   const syllableRegex = /[aeiouáéíóúãõâêîôûàäëïöü]/gi;
   const matches = word.match(syllableRegex);
   return matches ? matches.length : 0;
 };
 
-const hasAccents = (word: string) => {
+const hasAccents = (word: string): boolean => {
   const accentRegex = /[áéíóúãõâêîôûàäëïöü]/gi;
   return accentRegex.test(word);
 };

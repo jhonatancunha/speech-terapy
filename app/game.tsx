@@ -1,10 +1,8 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import Voice, {
-  SpeechErrorEvent,
-  SpeechResultsEvent,
-} from '@react-native-voice/voice';
+import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
 import { Button, Icon, ProgressBar, Text } from '@ui-kitten/components';
 import { View } from 'react-native';
 import { useArrayState } from '~/hooks/useArrayState';
@@ -16,8 +14,8 @@ import BadLottie from '../assets/lotties/bad.json';
 import RecordingLottie from '../assets/lotties/recording.json';
 import { router, useLocalSearchParams } from 'expo-router';
 
-export default function App() {
-  const TOTAL_WORDS = 15;
+export default function App(): React.JSX.Element {
+  const TOTAL_WORDS = 10;
   const TIMEOUT = 1000 * 60;
 
   const { difficulty } = useLocalSearchParams();
@@ -32,12 +30,10 @@ export default function App() {
 
   const results = useArrayState<number>([]);
 
-  const selectedWords = useMemo(() => {
-    return getWordsByDifficulty(
-      TOTAL_WORDS,
-      parseInt(difficulty as string, 10),
-    );
-  }, [getWordsByDifficulty]);
+  const selectedWords = useMemo(
+    () => getWordsByDifficulty(TOTAL_WORDS, parseInt(difficulty as string, 10)),
+    [difficulty],
+  );
 
   const currentWordFormatted = selectedWords[currentWordIdx]
     ?.split('')
@@ -45,23 +41,22 @@ export default function App() {
     .toUpperCase();
   const progress = (100 * currentWordIdx) / TOTAL_WORDS;
 
-  const onSpeechError = () => {
+  const onSpeechError = (): void => {
     isRecording.actions.setValue(false);
   };
 
-  const calculateMetric = (detectedWord: string) => {
-    setDetectedWord(detectedWord);
-
+  const calculateMetric = (wordDetected: string): void => {
+    setDetectedWord(wordDetected);
     setCurrentWordIdx((prevState) => {
       isRecording.actions.setValue(false);
       const currentWord = selectedWords[prevState];
 
-      if (!detectedWord) {
+      if (!wordDetected) {
         results.actions.add(0);
       } else {
         const metrics = compareTwoStrings(
           currentWord.toLocaleLowerCase(),
-          detectedWord.toLowerCase(),
+          wordDetected.toLowerCase(),
         );
         results.actions.add(metrics);
       }
@@ -78,7 +73,7 @@ export default function App() {
     });
   };
 
-  const onSpeechResults = (e: SpeechResultsEvent) => {
+  const onSpeechResults = (e: SpeechResultsEvent): void => {
     const word = e?.value?.[0];
     if (!word && !word?.length) {
       isRecording.actions.setValue(false);
@@ -87,19 +82,21 @@ export default function App() {
     }
   };
 
-  const startRecognizing = async () => {
+  const startRecognizing = async (): Promise<void> => {
     try {
       isRecording.actions.setValue(true);
       await Voice.start('pt-BR');
 
-      if (timeout.current) clearTimeout(timeout.current);
+      if (timeout.current) {
+        clearTimeout(timeout.current);
+      }
       timeout.current = setTimeout(stopRecognizing, TIMEOUT);
     } catch (e) {
       stopRecognizing();
     }
   };
 
-  const stopRecognizing = async () => {
+  const stopRecognizing = async (): Promise<void> => {
     try {
       if (timeout.current) {
         clearTimeout(timeout.current);
@@ -112,15 +109,17 @@ export default function App() {
     }
   };
 
-  const restartGame = () => {
-    router.navigate({ pathname: 'index' });
+  const restartGame = (): void => {
     setDetectedWord('');
     setCurrentWordIdx(0);
     isRecording.actions.setFalse();
     isFinished.actions.setFalse();
     showFeedback.actions.setFalse();
     results.actions.setData([]);
-    if (timeout.current) clearTimeout(timeout.current);
+    if (timeout.current) {
+      clearTimeout(timeout.current);
+    }
+    router.navigate({ pathname: '/' });
   };
 
   const averageMetrics = useMemo(() => {
@@ -131,9 +130,10 @@ export default function App() {
   useEffect(() => {
     Voice.onSpeechError = onSpeechError;
     Voice.onSpeechResults = onSpeechResults;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const renderFeedback = () => {
+  const renderFeedback = (): React.JSX.Element => {
     const currentResult = results.state?.[currentWordIdx - 1] * 100;
     const currentWord = selectedWords[currentWordIdx - 1];
     const animation = currentResult > 50 ? HappyLottie : BadLottie;
@@ -173,54 +173,50 @@ export default function App() {
     );
   };
 
-  const renderContent = () => {
-    return (
-      <>
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text style={{ textAlign: 'center', fontSize: 13 }}>PALAVRA</Text>
-          <Text style={{ textAlign: 'center' }} category="h4">
-            {!isFinished.value
-              ? currentWordFormatted
-              : `Você acertou um total de ${(averageMetrics * 100).toFixed(
-                  2,
-                )}%`}
-          </Text>
+  const renderContent = (): React.JSX.Element => (
+    <>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text style={{ textAlign: 'center', fontSize: 13 }}>PALAVRA</Text>
+        <Text style={{ textAlign: 'center' }} category="h4">
+          {!isFinished.value
+            ? currentWordFormatted
+            : `Você acertou um total de ${(averageMetrics * 100).toFixed(2)}%`}
+        </Text>
 
-          {isRecording.value ? (
-            <LottieView
-              autoPlay
-              style={{
-                width: 60,
-                height: 60,
-              }}
-              source={RecordingLottie}
-            />
-          ) : null}
-        </View>
-
-        {!isRecording.value && !isFinished.value ? (
-          <Button
-            onPress={startRecognizing}
-            accessoryLeft={<Icon name={'mic-outline'} />}>
-            RESPONDER
-          </Button>
+        {isRecording.value ? (
+          <LottieView
+            autoPlay
+            style={{
+              width: 60,
+              height: 60,
+            }}
+            source={RecordingLottie}
+          />
         ) : null}
+      </View>
 
-        {isFinished.value ? (
-          <Button
-            onPress={restartGame}
-            accessoryLeft={<Icon name={'mic-outline'} />}>
-            RECOMEÇAR
-          </Button>
-        ) : null}
-      </>
-    );
-  };
+      {!isRecording.value && !isFinished.value ? (
+        <Button
+          onPress={startRecognizing}
+          accessoryLeft={<Icon name={'mic-outline'} />}>
+          RESPONDER
+        </Button>
+      ) : null}
+
+      {isFinished.value ? (
+        <Button
+          onPress={restartGame}
+          accessoryLeft={<Icon name={'sync-outline'} />}>
+          RECOMEÇAR
+        </Button>
+      ) : null}
+    </>
+  );
 
   return (
     <SafeAreaView
