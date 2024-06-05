@@ -14,7 +14,7 @@ import LottieView from 'lottie-react-native';
 import HappyLottie from '../assets/lotties/happy.json';
 import BadLottie from '../assets/lotties/bad.json';
 import RecordingLottie from '../assets/lotties/recording.json';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 export default function App() {
   const TOTAL_WORDS = 15;
@@ -113,6 +113,7 @@ export default function App() {
   };
 
   const restartGame = () => {
+    router.navigate({ pathname: 'index' });
     setDetectedWord('');
     setCurrentWordIdx(0);
     isRecording.actions.setFalse();

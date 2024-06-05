@@ -21,7 +21,7 @@ export default function App() {
         onPress={() => handlePress(WordsLevelsEnum.EASY)}
         status="success"
         appearance="outline"
-        accessoryRight={<Icon name="star" />}>
+        accessoryRight={<Icon name="star-outline" />}>
         Fácil
       </Button>
       <Button
