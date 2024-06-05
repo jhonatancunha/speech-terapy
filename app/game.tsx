@@ -1,22 +1,20 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Voice, {
   SpeechErrorEvent,
   SpeechResultsEvent,
-} from "@react-native-voice/voice";
-import { Button, Icon, ProgressBar, Text } from "@ui-kitten/components";
-import { View } from "react-native";
-import { useArrayState } from "~/hooks/useArrayState";
-import { compareTwoStrings, getWordsByDifficulty } from "~/utils/string.utils";
-import { useBoolean } from "~/hooks/useBooleanState/useBooleanState.hook";
-import LottieView from "lottie-react-native";
-import HappyLottie from "../assets/lotties/happy.json";
-import BadLottie from "../assets/lotties/bad.json";
-import RecordingLottie from "../assets/lotties/recording.json";
-import { words } from "~/assets/words";
-import { generateRandomIndices } from "~/utils/array.utils";
-import { useLocalSearchParams } from "expo-router";
+} from '@react-native-voice/voice';
+import { Button, Icon, ProgressBar, Text } from '@ui-kitten/components';
+import { View } from 'react-native';
+import { useArrayState } from '~/hooks/useArrayState';
+import { compareTwoStrings, getWordsByDifficulty } from '~/utils/string.utils';
+import { useBoolean } from '~/hooks/useBooleanState/useBooleanState.hook';
+import LottieView from 'lottie-react-native';
+import HappyLottie from '../assets/lotties/happy.json';
+import BadLottie from '../assets/lotties/bad.json';
+import RecordingLottie from '../assets/lotties/recording.json';
+import { useLocalSearchParams } from 'expo-router';
 
 export default function App() {
   const TOTAL_WORDS = 15;
@@ -25,7 +23,7 @@ export default function App() {
   const { difficulty } = useLocalSearchParams();
 
   const [currentWordIdx, setCurrentWordIdx] = useState<number>(0);
-  const [detectedWord, setDetectedWord] = useState<string>("");
+  const [detectedWord, setDetectedWord] = useState<string>('');
 
   const isRecording = useBoolean(false);
   const isFinished = useBoolean(false);
@@ -37,26 +35,23 @@ export default function App() {
   const selectedWords = useMemo(() => {
     return getWordsByDifficulty(
       TOTAL_WORDS,
-      parseInt(difficulty as string, 10)
+      parseInt(difficulty as string, 10),
     );
   }, [getWordsByDifficulty]);
 
   const currentWordFormatted = selectedWords[currentWordIdx]
-    ?.split("")
-    ?.join(" ")
+    ?.split('')
+    ?.join(' ')
     .toUpperCase();
   const progress = (100 * currentWordIdx) / TOTAL_WORDS;
 
-  const onSpeechError = (e: SpeechErrorEvent) => {
+  const onSpeechError = () => {
     isRecording.actions.setValue(false);
   };
 
-  console.log("currentWordIdx", currentWordIdx, selectedWords[currentWordIdx]);
-
   const calculateMetric = (detectedWord: string) => {
-    console.log("chamou calculate", detectedWord);
-
     setDetectedWord(detectedWord);
+
     setCurrentWordIdx((prevState) => {
       isRecording.actions.setValue(false);
       const currentWord = selectedWords[prevState];
@@ -66,7 +61,7 @@ export default function App() {
       } else {
         const metrics = compareTwoStrings(
           currentWord.toLocaleLowerCase(),
-          detectedWord.toLowerCase()
+          detectedWord.toLowerCase(),
         );
         results.actions.add(metrics);
       }
@@ -84,39 +79,41 @@ export default function App() {
   };
 
   const onSpeechResults = (e: SpeechResultsEvent) => {
-    console.log("onSpeechResults", e?.value?.[0]);
-
-    calculateMetric(e?.value?.[0] ?? "");
+    const word = e?.value?.[0];
+    if (!word && !word?.length) {
+      isRecording.actions.setValue(false);
+    } else {
+      calculateMetric(e?.value?.[0] ?? '');
+    }
   };
 
   const startRecognizing = async () => {
     try {
-      console.log("startRecognizing");
       isRecording.actions.setValue(true);
-      await Voice.start("pt-BR");
+      await Voice.start('pt-BR');
 
       if (timeout.current) clearTimeout(timeout.current);
       timeout.current = setTimeout(stopRecognizing, TIMEOUT);
     } catch (e) {
-      console.error("_startRecognizing", e);
       stopRecognizing();
     }
   };
 
   const stopRecognizing = async () => {
     try {
-      if (timeout.current) clearTimeout(timeout.current);
+      if (timeout.current) {
+        clearTimeout(timeout.current);
+      }
       isRecording.actions.setValue(false);
       await Voice.stop();
-      console.log("stopRecognizing");
-      calculateMetric("");
+      calculateMetric('');
     } catch (e) {
-      console.error("_stopRecognizing", e);
+      console.error('_stopRecognizing', e);
     }
   };
 
   const restartGame = () => {
-    setDetectedWord("");
+    setDetectedWord('');
     setCurrentWordIdx(0);
     isRecording.actions.setFalse();
     isFinished.actions.setFalse();
@@ -145,10 +142,9 @@ export default function App() {
         <View
           style={{
             flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
           {/* <Text category="h4">
           Rsultado: {currentResult?.toFixed(2)}%
         </Text> */}
@@ -169,8 +165,7 @@ export default function App() {
 
         <Button
           onPress={showFeedback.actions.setFalse}
-          accessoryLeft={<Icon name={"play-circle-outline"} />}
-        >
+          accessoryLeft={<Icon name={'play-circle-outline'} />}>
           CONTINUAR
         </Button>
       </>
@@ -183,16 +178,15 @@ export default function App() {
         <View
           style={{
             flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{ textAlign: "center", fontSize: 13 }}>PALAVRA</Text>
-          <Text style={{ textAlign: "center" }} category="h4">
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Text style={{ textAlign: 'center', fontSize: 13 }}>PALAVRA</Text>
+          <Text style={{ textAlign: 'center' }} category="h4">
             {!isFinished.value
               ? currentWordFormatted
               : `Você acertou um total de ${(averageMetrics * 100).toFixed(
-                  2
+                  2,
                 )}%`}
           </Text>
 
@@ -211,8 +205,7 @@ export default function App() {
         {!isRecording.value && !isFinished.value ? (
           <Button
             onPress={startRecognizing}
-            accessoryLeft={<Icon name={"mic-outline"} />}
-          >
+            accessoryLeft={<Icon name={'mic-outline'} />}>
             RESPONDER
           </Button>
         ) : null}
@@ -220,8 +213,7 @@ export default function App() {
         {isFinished.value ? (
           <Button
             onPress={restartGame}
-            accessoryLeft={<Icon name={"mic-outline"} />}
-          >
+            accessoryLeft={<Icon name={'mic-outline'} />}>
             RECOMEÇAR
           </Button>
         ) : null}
@@ -233,15 +225,13 @@ export default function App() {
     <SafeAreaView
       style={{
         padding: 20,
-        height: "100%",
-      }}
-    >
+        height: '100%',
+      }}>
       {!isFinished.value ? (
         <View
           style={{
             gap: 10,
-          }}
-        >
+          }}>
           <Text>
             {currentWordIdx + 1}/{TOTAL_WORDS}
           </Text>
