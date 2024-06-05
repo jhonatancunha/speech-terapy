@@ -1,6 +1,6 @@
 import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 
-export function useColorScheme() {
+export const useColorScheme = () => {
   const { colorScheme, setColorScheme, toggleColorScheme } =
     useNativewindColorScheme();
   return {
@@ -9,4 +9,4 @@ export function useColorScheme() {
     setColorScheme,
     toggleColorScheme,
   };
-}
+};

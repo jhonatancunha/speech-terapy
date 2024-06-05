@@ -1,14 +1,14 @@
-import { Button, Icon, Text } from "@ui-kitten/components";
-import { router } from "expo-router";
-import React from "react";
-import { StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { WordsLevelsEnum } from "~/utils/enums.utils";
-import { EvaIconsPack } from "@ui-kitten/eva-icons";
+import { Button, Icon, Text } from '@ui-kitten/components';
+import { router } from 'expo-router';
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { WordsLevelsEnum } from '~/utils/enums.utils';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 
 export default function App() {
   const handlePress = (difficulty: WordsLevelsEnum) => {
-    router.navigate({ pathname: "game", params: { difficulty } });
+    router.navigate({ pathname: 'game', params: { difficulty } });
   };
 
   return (
@@ -21,8 +21,7 @@ export default function App() {
         onPress={() => handlePress(WordsLevelsEnum.EASY)}
         status="success"
         appearance="outline"
-        accessoryRight={<Icon name="star" />}
-      >
+        accessoryRight={<Icon name="star" />}>
         Fácil
       </Button>
       <Button
@@ -30,8 +29,7 @@ export default function App() {
         onPress={() => handlePress(WordsLevelsEnum.MEDIUM)}
         status="basic"
         appearance="outline"
-        accessoryRight={<Icon name="cube-outline" />}
-      >
+        accessoryRight={<Icon name="cube-outline" />}>
         Médio
       </Button>
       <Button
@@ -39,8 +37,7 @@ export default function App() {
         onPress={() => handlePress(WordsLevelsEnum.HARD)}
         status="warning"
         appearance="outline"
-        accessoryRight={<Icon name="alert-triangle-outline" />}
-      >
+        accessoryRight={<Icon name="alert-triangle-outline" />}>
         Difícil
       </Button>
       <Button
@@ -48,8 +45,7 @@ export default function App() {
         onPress={() => handlePress(WordsLevelsEnum.HARDER)}
         status="danger"
         appearance="outline"
-        accessoryRight={<Icon name="award-outline" />}
-      >
+        accessoryRight={<Icon name="award-outline" />}>
         Muito difícil
       </Button>
     </SafeAreaView>
@@ -59,8 +55,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
   },
   header: {
@@ -68,6 +64,6 @@ const styles = StyleSheet.create({
   },
   button: {
     marginVertical: 16,
-    width: "80%",
+    width: '80%',
   },
 });

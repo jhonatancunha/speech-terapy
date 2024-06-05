@@ -1,6 +1,6 @@
-import { words } from "~/assets/words";
-import { WordsLevelsEnum } from "./enums.utils";
-import { generateRandomIndices } from "./array.utils";
+import { words } from '~/assets/words';
+import { WordsLevelsEnum } from './enums.utils';
+import { generateRandomIndices } from './array.utils';
 
 /**
  * Calculates the similarity between two strings based on the concept of bigrams.
@@ -13,11 +13,16 @@ import { generateRandomIndices } from "./array.utils";
  *   - Otherwise, returns a value calculated based on the Jaccard similarity coefficient.
  */
 export const compareTwoStrings = (first: string, second: string): number => {
-  first = first.replace(/\s+/g, "");
-  second = second.replace(/\s+/g, "");
+  first = first.replace(/\s+/g, '');
+  second = second.replace(/\s+/g, '');
 
-  if (first === second) return 1; // identical or empty
-  if (first.length < 2 || second.length < 2) return 0; // if either is a 0-letter or 1-letter string
+  if (first === second) {
+    return 1;
+  }
+
+  if (first.length < 2 || second.length < 2) {
+    return 0;
+  }
 
   let firstBigrams = new Map();
   for (let i = 0; i < first.length - 1; i++) {
@@ -61,7 +66,7 @@ const hasAccents = (word: string) => {
  */
 export const getWordsByDifficulty = (
   amount: number,
-  difficulty: WordsLevelsEnum
+  difficulty: WordsLevelsEnum,
 ): Array<string> => {
   const easyWords: Array<string> = [];
   const mediumWords: Array<string> = [];
