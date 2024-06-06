@@ -130,6 +130,10 @@ export default function App(): React.JSX.Element {
   useEffect(() => {
     Voice.onSpeechError = onSpeechError;
     Voice.onSpeechResults = onSpeechResults;
+
+    return () => {
+      Voice.destroy();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
